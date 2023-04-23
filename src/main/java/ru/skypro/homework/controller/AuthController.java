@@ -22,7 +22,7 @@ import static ru.skypro.homework.dto.Role.USER;
 public class AuthController {
 
     private final AuthService authService;
-
+    @CrossOrigin(value = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
@@ -31,7 +31,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-
+    @CrossOrigin(value = "http://localhost:3000")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req) {
         Role role = req.getRole() == null ? USER : req.getRole();
