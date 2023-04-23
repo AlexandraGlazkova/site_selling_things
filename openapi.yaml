@@ -1,155 +1,114 @@
-openapi: 3.0.3
+openapi: 3.0.1
 info:
-  title: Ads app API Documentation
+  contact: {}
+  description: Api Documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  termsOfService: urn:tos
+  title: Api Documentation
   version: '1.0'
 servers:
   - url: http://localhost:8080
+    description: Generated server url
 paths:
   /users/set_password:
     post:
       tags:
         - Пользователи
-      summary: 'Обновление пароля'
+      summary: setPassword
       operationId: setPassword
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/NewPassword'
-      responses:
-        '200':
-          description: OK
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-  /users/me:
-    get:
-      tags:
-        - Пользователи
-      summary: 'Получить информацию об авторизованном пользователе'
-      operationId: getUser
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-          description: OK
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-    patch:
-      tags:
-        - Пользователи
-      summary: 'Обновить информацию об авторизованном пользователе'
-      operationId: updateUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
+        required: true
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: '#/components/schemas/User'
-        '204':
-          description: No Content
+                $ref: '#/components/schemas/NewPassword'
         '401':
           description: Unauthorized
+          content: {}
         '403':
           description: Forbidden
+          content: {}
         '404':
-          description: Not Found
-  /users/me/image:
-    patch:
-      tags:
-        - Пользователи
-      summary: 'Обновить аватар авторизованного пользователя'
-      operationId: updateUserImage
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              required:
-                - image
-              type: object
-              properties:
-                image:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: OK
-        '404':
+          content: {}
           description: Not Found
 
   /register:
     post:
       tags:
-        - Регистрация
-      summary: 'Регистрация пользователя'
+        - Авторизация
+      summary: register
       operationId: register
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RegisterReq'
+        required: true
       responses:
         '404':
           description: Not Found
         '201':
+          content: {}
           description: Created
         '401':
+          content: {}
           description: Unauthorized
         '403':
+          content: {}
           description: Forbidden
   /login:
     post:
       tags:
         - Авторизация
-      summary: 'Авторизация пользователя'
+      summary: login
       operationId: login
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginReq'
+        required: true
       responses:
         '200':
           description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
         '404':
           description: Not Found
         '401':
+          content: {}
           description: Unauthorized
         '403':
+          content: {}
           description: Forbidden
   /ads:
     get:
       tags:
         - Объявления
-      operationId: getAllAds
-      summary: 'Получить все объявления'
+      operationId: getALLAds
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/ResponseWrapperAds'
     post:
       tags:
         - Объявления
-      summary: 'Добавить объявление'
-      operationId: addAd
+      summary: addAds
+      operationId: addAds
       requestBody:
         content:
           multipart/form-data:
@@ -168,33 +127,34 @@ paths:
         '201':
           description: Created
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/Ads'
         '404':
           description: Not Found
         '403':
+          content: {}
           description: Forbidden
         '401':
+          content: {}
           description: Unauthorized
-  /ads/{id}/comments:
+  /ads/{ad_pk}/comments:
     get:
       tags:
-        - Комментарии
-      summary: 'Получить комментарии объявления'
+        - Объявления
+      summary: getComments
       operationId: getComments
       parameters:
-        - name: id
+        - name: ad_pk
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/ResponseWrapperComment'
         '404':
@@ -202,40 +162,116 @@ paths:
 
     post:
       tags:
-        - Комментарии
-      summary: 'Добавить комментарий к объявлению'
-      operationId: addComment
+        - Объявления
+      summary: addComments
+      operationId: addComments
       parameters:
-        - name: id
+        - name: ad_pk
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Comment'
+        required: true
       responses:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/Comment'
         '404':
           description: Not Found
         '403':
+          content: {}
           description: Forbidden
         '401':
+          content: {}
           description: Unauthorized
-
+  /users/me:
+    get:
+      tags:
+        - Пользователи
+      summary: getUser
+      operationId: getUser_1
+      responses:
+        '200':
+          content: {}
+          description: OK
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
+        '404':
+          content: {}
+          description: Not Found
+    patch:
+      tags:
+        - Пользователи
+      summary: updateUser
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '204':
+          description: No Content
+          content: {}
+        '401':
+          description: Unauthorized
+          content: {}
+        '403':
+          description: Forbidden
+          content: {}
+        '404':
+          description: Not Found
+  /users/me/image:
+    patch:
+      tags:
+        - Пользователи
+      summary: updateUserImage
+      description: UpdateUserImage
+      operationId: updateUserImage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - image
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
   /ads/{id}:
     get:
       tags:
         - Объявления
-      summary: 'Получить информацию об объявлении'
+      summary: getFullAd
       operationId: getAds
       parameters:
         - name: id
@@ -248,7 +284,7 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/FullAds'
         '404':
@@ -256,8 +292,8 @@ paths:
     delete:
       tags:
         - Объявления
-      summary: 'Удалить объявление'
-      operationId: removeAd
+      summary: removeAds
+      operationId: removeAds
       parameters:
         - name: id
           in: path
@@ -267,15 +303,18 @@ paths:
             format: int32
       responses:
         '204':
+          content: {}
           description: No Content
         '401':
+          content: {}
           description: Unauthorized
         '403':
+          content: {}
           description: Forbidden
     patch:
       tags:
         - Объявления
-      summary: 'Обновить информацию об объявлении'
+      summary: updateAds
       operationId: updateAds
       parameters:
         - name: id
@@ -294,29 +333,56 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/Ads'
         '404':
           description: Not Found
         '403':
+          content: {}
           description: Forbidden
         '401':
+          content: {}
           description: Unauthorized
-  /ads/{adId}/comments/{commentId}:
-    delete:
+  /ads/{ad_pk}/comments/{id}:
+    get:
       tags:
-        - Комментарии
-      summary: 'Удалить комментарий'
-      operationId: deleteComment
+        - Объявления
+      summary: getComments
+      operationId: getComments_1
       parameters:
-        - name: adId
+        - name: ad_pk
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
           in: path
           required: true
           schema:
             type: integer
             format: int32
-        - name: commentId
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - Объявления
+      summary: deleteComments
+      operationId: deleteComments
+      parameters:
+        - name: ad_pk
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
           in: path
           required: true
           schema:
@@ -328,22 +394,23 @@ paths:
         '404':
           description: Not Found
         '403':
+          content: {}
           description: Forbidden
         '401':
+          content: {}
           description: Unauthorized
     patch:
       tags:
-        - Комментарии
-      summary: 'Обновить комментарий'
-      operationId: updateComment
+        - Объявления
+      summary: updateComments
+      operationId: updateComments
       parameters:
-        - name: adId
+        - name: ad_pk
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
-        - name: commentId
+            type: string
+        - name: id
           in: path
           required: true
           schema:
@@ -354,42 +421,72 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Comment'
+        required: true
       responses:
         '200':
           description: OK
           content:
-            'application/json':
+            '*/*':
               schema:
                 $ref: '#/components/schemas/Comment'
         '404':
           description: Not Found
         '403':
+          content: {}
           description: Forbidden
         '401':
+          content: {}
           description: Unauthorized
 
   /ads/me:
     get:
-      tags:
-        - Объявления
-      summary: 'Получить объявления авторизованного пользователя'
-      operationId: getAdsMe
+      operationId: getAdsMeUsingGET
+      parameters:
+        - in: query
+          name: authenticated
+          schema:
+            type: boolean
+        - in: query
+          name: authorities[0].authority
+          schema:
+            type: string
+        - in: query
+          name: credentials
+          schema:
+            type: object
+        - in: query
+          name: details
+          schema:
+            type: object
+        - in: query
+          name: principal
+          schema:
+            type: object
       responses:
         '200':
           content:
-            application/json:
+            '*/*':
               schema:
                 $ref: '#/components/schemas/ResponseWrapperAds'
           description: OK
         '401':
+          content: {}
           description: Unauthorized
         '403':
+          content: {}
           description: Forbidden
-  /ads/{id}/image:
-    patch:
+        '404':
+          content: {}
+          description: Not Found
+      summary: getAdsMe
       tags:
         - Объявления
-      summary: 'Обновить картинку объявления'
+      x-accepts: '*/*'
+  /image/{id}:
+    patch:
+      tags:
+        - Изображения
+      summary: updateAdsImage
       operationId: updateImage
       parameters:
         - name: id
@@ -421,7 +518,6 @@ paths:
                   format: byte
         '404':
           description: Not Found
-
 components:
   schemas:
     NewPassword:
@@ -429,31 +525,23 @@ components:
       properties:
         currentPassword:
           type: string
-          description: 'текущий пароль'
         newPassword:
           type: string
-          description: 'новый пароль'
     RegisterReq:
       type: object
       properties:
         username:
           type: string
-          description: 'логин'
         password:
           type: string
-          description: 'пароль'
         firstName:
           type: string
-          description: 'имя пользователя'
         lastName:
           type: string
-          description: 'фамилия пользователя'
         phone:
           type: string
-          description: 'телефон пользователя'
         role:
           type: string
-          description: 'роль пользователя'
           enum:
             - USER
             - ADMIN
@@ -462,10 +550,8 @@ components:
       properties:
         password:
           type: string
-          description: 'пароль'
         username:
           type: string
-          description: 'логин'
     CreateAds:
       required:
         - description
@@ -475,88 +561,68 @@ components:
       properties:
         description:
           type: string
-          description: 'описание объявления'
         price:
           type: integer
           format: int32
-          description: 'цена объявления'
         title:
           type: string
-          description: 'заголовок объявления'
     Ads:
       type: object
       properties:
         author:
           type: integer
           format: int32
-          description: 'id автора объявления'
         image:
-          type: string
-          description: 'ссылка на картинку объявления'
+          type: array
+          items:
+            type: string
         pk:
           type: integer
           format: int32
-          description: 'id объявления'
         price:
           type: integer
           format: int32
-          description: 'цена объявления'
         title:
           type: string
-          description: 'заголовок объявления'
     Comment:
       type: object
       properties:
         author:
           type: integer
           format: int32
-          description: 'id автора комментария'
-        authorImage:
-          type: string
-          description: 'ссылка на аватар автора комментария'
-        authorFirstName:
-          type: string
-          description: 'имя создателя комментария'
         createdAt:
-          type: integer
-          format: int64
-          description: 'дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970'
+          type: string
         pk:
           type: integer
           format: int32
-          description: 'id комментария'
         text:
           type: string
-          description: 'текст комментария'
     User:
       type: object
       properties:
+        email:
+          type: string
+        firstName:
+          type: string
         id:
           type: integer
           format: int32
-          description: 'id пользователя'
-        email:
-          type: string
-          description: 'логин пользователя'
-        firstName:
-          type: string
-          description: 'имя пользователя'
         lastName:
           type: string
-          description: 'фамилия пользователя'
         phone:
           type: string
-          description: 'телефон пользователя'
+        regDate:
+          type: string
+        city:
+          type: string
         image:
           type: string
-          description: 'ссылка на аватар пользователя'
     ResponseWrapperAds:
       type: object
       properties:
         count:
           type: integer
           format: int32
-          description: 'общее количество объявлений'
         results:
           type: array
           items:
@@ -564,42 +630,34 @@ components:
     FullAds:
       type: object
       properties:
+        authorFirstName:
+          type: string
+        authorLastName:
+          type: string
+        description:
+          type: string
+        email:
+          type: string
+        image:
+          type: array
+          items:
+            type: string
+        phone:
+          type: string
         pk:
           type: integer
           format: int32
-          description: 'id объявления'
-        authorFirstName:
-          type: string
-          description: 'имя автора объявления'
-        authorLastName:
-          type: string
-          description: 'фамилия автора объявления'
-        description:
-          type: string
-          description: 'описание объявления'
-        email:
-          type: string
-          description: 'логин автора объявления'
-        image:
-          type: string
-          description: 'ссылка на картинку объявления'
-        phone:
-          type: string
-          description: 'телефон автора объявления'
         price:
           type: integer
           format: int32
-          description: 'цена объявления'
         title:
           type: string
-          description: 'заголовок объявления'
     ResponseWrapperComment:
       type: object
       properties:
         count:
           type: integer
           format: int32
-          description: 'общее количество комментариев'
         results:
           type: array
           items:
