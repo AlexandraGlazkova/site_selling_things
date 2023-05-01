@@ -1,159 +1,156 @@
 package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.UserDto;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.NewPassword;
+
+import ru.skypro.homework.entity.User;
 import ru.skypro.homework.service.UserService;
-import ru.skypro.homework.service.impl.UserServiceImpl;
+
+
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("users")
 public class UserController {
-
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-  /*
-      @Operation(summary = "Обновление пароля",
+    @Operation(
+            summary = "Обновление пароля",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Новый пароль",
+                            description = "Пароль изменен"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized"
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not Found"
+                    )
+            },
+            tags = "Пользователи"
+    )
+    @PostMapping("/set_password")
+    public ResponseEntity<?> setPassword(@RequestBody NewPassword password) {
+        if (userService.setPassword(password.getCurrentPassword(), password.getNewPassword())) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @Operation(
+            summary = "Получить информацию об авторизованном пользователе",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Информация получена",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ?????????.class)
+                                    schema = @Schema(implementation = User.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Ошибка авторизации"
+                            description = "Unauthorized"
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Доступ запрещен"
+                            description = "Forbidden"
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Пользователь не найден"
+                            description = "Not Found"
                     )
-            }
+            },
+            tags = "Пользователи"
     )
-
-    @PostMapping("/set_password")
-    //метод для смены пароля
-*/
-
-   @Operation(
-           summary = "Получить информацию об авторизованном пользователее",
-                    responses = {
-                   @ApiResponse(
-                           responseCode = "200",
-                           description = "Информация о пользователе",
-                           content = @Content(
-                                   mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                   schema = @Schema(implementation = UserDto.class)
-                           )
-                   ),
-                   @ApiResponse(
-                           responseCode = "401",
-                           description = "Ошибка авторизации"
-                   ),
-                   @ApiResponse(
-                           responseCode = "403",
-                           description = "Доступ запрещен"
-                   ),
-                   @ApiResponse(
-                           responseCode = "404",
-                           description = "Пользователь не найден"
-                   )
-           }
-   )
-
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser() {
-        return null;
-        //ошибка. что должен возвращать данный метод????????
+    public ResponseEntity<User> getUser() {
+        User user = userService.getUser();
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @Operation(
             summary = "Обновить информацию об авторизованном пользователе",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Информация о пользователе",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = UserDto.class)
-                    )
-            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Информация о пользователе",
+                            description = "Пользователь изменен",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserDto.class)
+                                    schema = @Schema(implementation = User.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "204",
-                            description = "No content"
+                            description = "No Content"
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Ошибка авторизации"
+                            description = "Unauthorized"
                     ),
                     @ApiResponse(
                             responseCode = "403",
-                            description = "Доступ запрещен"
+                            description = "Forbidden"
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Пользователь не найден"
+                            description = "Not Found"
                     )
-            }
+            },
+            tags = "Пользователи"
     )
-
-
     @PatchMapping("/me")
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        return new UserDto();
-
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        if (userService.updateUser(user)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @Operation(
             summary = "Обновить аватар авторизованного пользователя",
-                        responses = {
+            responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Аватар пользователя",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserDto.class)
-                            )
+                            description = "Фото изменено"
                     ),
-
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Пользователь не найден"
+                            description = "Not Found"
                     )
-            }
+            },
+            tags = "Пользователи"
     )
-
-    @PatchMapping("/me/image")
-    public UserDto updateUserImage(@RequestBody UserDto userDto) {
-        return new UserDto ();
-        //????????????
+    @PatchMapping(value = "/me/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateUserImage(@RequestPart(name = "image") MultipartFile image) {
+        if (userService.updateUserImage(image)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
-
-
 }
