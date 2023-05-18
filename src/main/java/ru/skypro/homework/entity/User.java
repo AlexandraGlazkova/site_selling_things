@@ -56,6 +56,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    /**
+     * поле - пароль пользователя
+     */
+    private String password;
 
 
 
