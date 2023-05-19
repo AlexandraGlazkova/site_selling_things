@@ -46,3 +46,7 @@ create table images
     ads_id     int
 
 );
+
+-- changeset filippova-t:2
+alter table  users
+    add column  password text;

@@ -2,25 +2,27 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.FullAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
+import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -30,8 +32,7 @@ import java.io.IOException;
 public class AdsController {
     private final AdsService adsService;
     private final ImageService imageService;
-
-    //1
+    private final AdsMapper adsMapper;
 
     @Operation(summary = "Получить все объявления",
             responses = {
@@ -58,16 +59,16 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @GetMapping
-    public ResponseEntity<?> getAllAds() {
-        if (adsService.getAllAds()) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseWrapperAds getAllAds() {
+        List<AdsDto> adsDtoList = adsService.getAllAds().stream().map(x -> adsMapper.mapToAdsDto(x)).
+                collect(Collectors.toList());
+        ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
+        responseWrapperAds.setCount(adsDtoList.size());
+        responseWrapperAds.setResults(adsDtoList);
+        return responseWrapperAds;
     }
 
 
-    //2
 
     @Operation(summary = "Добавить объявление",
             responses = {
@@ -94,19 +95,15 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addAds(@Parameter(required = true)
+    public ResponseEntity<AdsDto> addAds(@Parameter(required = true)
                                         @RequestPart(name = "properties") @Valid CreateAds createAdsDto,
-                                    @RequestPart(name = "image") @Valid MultipartFile multipartFile) throws IOException {
+                                      @RequestPart(name = "image") @Valid MultipartFile multipartFile, Authentication authentication) throws IOException {
 
-        if (adsService.addAd(createAdsDto, multipartFile)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(adsMapper.mapToAdsDto(adsService.addAd(createAdsDto, multipartFile, authentication)));
 
     }
 
-    //3
+
     @Operation(summary = "Получить информацию об объявлении",
             responses = {
                     @ApiResponse(
@@ -124,19 +121,10 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @GetMapping("//ads/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer adId) {
-
-
-        if (adsService.getAds(adId)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
+    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(adsMapper.mapToFullAds(adsService.getAds(id)));
     }
 
-
-    //4
 
     @Operation(summary = "Удалить объявление",
             responses = {
@@ -161,15 +149,12 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @DeleteMapping("/ads/{id}")
-    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        if (adsService.removeAd(id)) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<Void> removeAd(@PathVariable("id") Integer id, Authentication authentication) {
+        adsService.removeAd(id, authentication);
+        return ResponseEntity.ok().build();
     }
 
 
-    //5
     @Operation(summary = "Обновить информацию об объявлении",
             responses = {
                     @ApiResponse(
@@ -197,18 +182,12 @@ public class AdsController {
     )
     @PatchMapping("/ads/{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id,
-                                            @RequestBody CreateAds createAds) {
-
-
-        if (adsService.updateAds(id)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
+                                            @RequestBody CreateAds createAds,  Authentication authentication) {
+        return ResponseEntity.ok(adsMapper.mapToAdsDto(adsService.updateAds(id, createAds, authentication)));
     }
 
-    //6
+
+
     @Operation(summary = "Получить объявления авторизованного пользователя",
             responses = {
                     @ApiResponse(
@@ -231,15 +210,11 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @GetMapping("/me")
-    public ResponseEntity<AdsDto> getAdsMe() {
-        if (adsService.getAdsMe()) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public  ResponseEntity<ResponseWrapperAds> getAdsMe(Authentication authentication) {
+               return ResponseEntity.ok(adsService.getAdsMe(authentication.getName()));
     }
 
-    //7
+
     @Operation(summary = "Обновить картинку объявления",
             responses = {
                     @ApiResponse(
@@ -257,13 +232,14 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> updateImage(@PathVariable Integer id, @Parameter(required = true)
-    @RequestPart(name = "image") @Valid MultipartFile image) throws IOException {
-        if (imageService.updateImage(id, image)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<?> updateImage(@PathVariable Integer id, @Parameter(required = true)
+    @RequestPart(name = "image") @Valid MultipartFile image, Authentication authentication) throws IOException {
+        adsService.updateAdsImage(id, image, authentication);
+        return ResponseEntity.ok().build();
         }
 
+
     }
-}
+
+
+
