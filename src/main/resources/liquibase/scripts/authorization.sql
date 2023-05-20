@@ -50,3 +50,8 @@ create table images
 -- changeset filippova-t:2
 alter table  users
     add column  password text;
+
+--changeset glazkovaa:3
+alter table images add column user_id int;
+
+SELECT * FROM ads WHERE ads.title LIKE '%коньки%';
