@@ -14,7 +14,6 @@ import ru.skypro.homework.dto.LoginReq;
 import ru.skypro.homework.dto.RegisterReq;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.service.AuthService;
-
 import static ru.skypro.homework.dto.Role.USER;
 
 @Slf4j
