@@ -113,8 +113,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAds getAdsByTitleLike(String title) {
         List<AdsDto> ads = adsRepository.findByTitleContainingIgnoreCase(title).stream()
-                .map(x -> AdsMapperInterface.INSTANCE.toDto(x))
-                .toList();
+                .map(x -> AdsMapperInterface.INSTANCE.toDto(x)).collect(Collectors.toList());
         ResponseWrapperAds responseWrapperAdsDto = new ResponseWrapperAds();
         responseWrapperAdsDto.setCount(ads.size());
         responseWrapperAdsDto.setResults(ads);

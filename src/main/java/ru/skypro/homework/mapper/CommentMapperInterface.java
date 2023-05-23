@@ -21,7 +21,7 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
     Comment toEntity(CommentDto dto);
 
     @Mapping(source = "id", target = "pk")
-    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "author", source = "author.id")
     CommentDto toDto(Comment entity);
 
