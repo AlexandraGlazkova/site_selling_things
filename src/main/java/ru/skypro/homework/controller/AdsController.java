@@ -17,7 +17,6 @@ import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.FullAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
-import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.mapper.AdsMapperInterface;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("ads")
 public class AdsController {
-    private static final Logger logger = LoggerFactory.getLogger(AdsController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
     private final ImageService imageService;
 
@@ -125,7 +124,7 @@ public class AdsController {
                     )
             }, tags = "Объявления"
     )
-    @GetMapping("//ads/{id}")
+    @GetMapping("/ads/{id}")
     public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id, Authentication authentication) {
         printLogInfo("GET", "getAds", "/" +  + id);
         return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id, authentication)));
@@ -249,7 +248,7 @@ public class AdsController {
         }
 
     private void printLogInfo(String request, String name, String path) {
-        logger.info("Вызван метод: " + name + ", тип запроса: "
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
                 + request + ", адрес: /ads" + path);
     }
 

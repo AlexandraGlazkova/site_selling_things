@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.mapper.CommentMapperInterface;
-import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.mapper.UserMapperInterface;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.UserService;
@@ -31,7 +29,7 @@ import java.io.IOException;
 @RequestMapping("users")
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final AuthService authService;
 
@@ -155,7 +153,7 @@ public class UserController {
     }
 
     private void printLogInfo(String request, String name, String path) {
-        logger.info("Вызван метод: " + name + ", тип запроса: "
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
                 + request + ", адрес: /users" + path);
     }
 }
