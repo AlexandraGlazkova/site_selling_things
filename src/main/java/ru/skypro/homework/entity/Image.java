@@ -47,7 +47,9 @@ public class Image {
          */
         @OneToOne
         private Ads ads;
-
+        @OneToOne
+        @JoinColumn(name = "user_id")
+        private User user;
     }
 
 
