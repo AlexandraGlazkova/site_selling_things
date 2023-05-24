@@ -17,4 +17,6 @@ public interface AdsService {
     Ads updateAds(Integer id, CreateAds createAds, Authentication authentication);
     ResponseWrapperAds getAdsMe(String username);
     void updateAdsImage(Integer id, MultipartFile image, Authentication authentication) throws IOException;
+    ResponseWrapperAds getAdsByTitleLike(String title);
 }
+

@@ -17,6 +17,7 @@ import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
+import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;
@@ -35,22 +36,24 @@ public class AdsServiceImpl implements AdsService {
     private final ImageService imageService;
     private final AdsMapper adsMapper;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     public Ads addAd(CreateAds createAds, MultipartFile image, Authentication authentication) throws IOException {
 
-        User user = userRepository.findByEmailIgnoreCase(SecurityContextHolder.getContext()
-                .getAuthentication().getName()).orElseThrow();
+        User user = userRepository.findByEmailIgnoreCase(authentication.getName()).orElseThrow(() ->
+                new UserNotFoundException("Пользователь с e-mail" + authentication.getName() + "не найден"));
         Ads ads = adsMapper.mapToAds(createAds, image);
         ads.setAuthor(user);
         ads.setImage(imageService.uploadImage(image));
         return adsRepository.save(ads);
-
     }
 
     @Override
     public Ads removeAd(Integer id, Authentication authentication ) {
+
         Ads ads = findAdsById(id);
+        imageRepository.deleteImageByAdsId(id);
         adsRepository.delete(ads);
         return ads;
     }
@@ -102,6 +105,17 @@ public class AdsServiceImpl implements AdsService {
         imageService.removeImage(ads.getImage());
         ads.setImage(imageService.uploadImage(image));
         adsRepository.save(ads);
+    }
+
+    @Override
+    public ResponseWrapperAds getAdsByTitleLike(String title) {
+        List<AdsDto> ads = adsRepository.findByTitleContainingIgnoreCase(title).stream()
+                .map(x -> adsMapper.mapToAdsDto(x))
+                .toList();
+        ResponseWrapperAds responseWrapperAdsDto = new ResponseWrapperAds();
+        responseWrapperAdsDto.setCount(ads.size());
+        responseWrapperAdsDto.setResults(ads);
+        return responseWrapperAdsDto;
     }
 
 

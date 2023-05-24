@@ -32,7 +32,7 @@ public class CommentMapper {
         }
         Comment entity = new Comment();
         entity.setAuthor(author);
-        entity.setAd(ads);
+        entity.setAds(ads);
         entity.setCreatedAt(dto.getCreatedAt());
         entity.setText(dto.getText());
         return entity;
