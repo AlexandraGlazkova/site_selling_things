@@ -2,6 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapperInterface;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
-import ru.skypro.homework.userDetailsManager.UserDetailsServiceImpl;
 
 import javax.validation.ValidationException;
 
@@ -21,7 +21,7 @@ import javax.validation.ValidationException;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-  private final UserDetailsServiceImpl userDetailsServiceImpl;
+  private final UserDetailsService userDetailsService;
   private final PasswordEncoder encoder;
   private final UserRepository userRepository;
 
@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
   public boolean login(String userName, String password) {
 
     try {
-      UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(userName);
+      UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
       if (!encoder.matches(password, userDetails.getPassword())) {
         throw new IncorrectPasswordException("Неверный пароль!");
       }

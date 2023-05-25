@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                                     .mvcMatchers("/ads/**", "/users/**")
                                     .authenticated())
             .cors()
-            .disable()
+            .and()
             .httpBasic(withDefaults());
     return http.build();
   }

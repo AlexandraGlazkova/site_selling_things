@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.*;
-import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.mapper.CommentMapperInterface;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.CommentService;
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("ads")
 public class CommentController {
-    private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     private final CommentService commentService;
     private final AdsService adsService;
 
@@ -168,7 +166,7 @@ public class CommentController {
 
 
     private void printLogInfo(String request, String name, String path) {
-        logger.info("Вызван метод: " + name + ", тип запроса: "
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
                 + request + ", адрес: /ads" + path);
     }
 
