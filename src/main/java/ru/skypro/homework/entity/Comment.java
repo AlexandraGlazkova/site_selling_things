@@ -1,13 +1,13 @@
 package ru.skypro.homework.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
 
 
+@Setter
+@Getter
 @Entity
 @Data
 @NoArgsConstructor
@@ -44,6 +44,6 @@ public class Comment {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ads_id")
-    private Ads ad;
+    private Ads ads;
 
 }

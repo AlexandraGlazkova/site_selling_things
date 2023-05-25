@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,7 +17,7 @@ import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.FullAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
-import ru.skypro.homework.mapper.AdsMapper;
+import ru.skypro.homework.mapper.AdsMapperInterface;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;
 
@@ -30,9 +32,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("ads")
 public class AdsController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
     private final ImageService imageService;
-    private final AdsMapper adsMapper;
+
 
     @Operation(summary = "Получить все объявления",
             responses = {
@@ -60,11 +63,12 @@ public class AdsController {
     )
     @GetMapping
     public ResponseWrapperAds getAllAds() {
-        List<AdsDto> adsDtoList = adsService.getAllAds().stream().map(x -> adsMapper.mapToAdsDto(x)).
+        List<AdsDto> adsDtoList = adsService.getAllAds().stream().map(x -> AdsMapperInterface.INSTANCE.toDto(x)).
                 collect(Collectors.toList());
         ResponseWrapperAds responseWrapperAds = new ResponseWrapperAds();
         responseWrapperAds.setCount(adsDtoList.size());
         responseWrapperAds.setResults(adsDtoList);
+        printLogInfo("GET", "getAllAds", "");
         return responseWrapperAds;
     }
 
@@ -98,8 +102,8 @@ public class AdsController {
     public ResponseEntity<AdsDto> addAds(@Parameter(required = true)
                                         @RequestPart(name = "properties") @Valid CreateAds createAdsDto,
                                       @RequestPart(name = "image") @Valid MultipartFile multipartFile, Authentication authentication) throws IOException {
-
-        return ResponseEntity.ok(adsMapper.mapToAdsDto(adsService.addAd(createAdsDto, multipartFile, authentication)));
+        printLogInfo("POST", "addAds", "");
+        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toDto(adsService.addAd(createAdsDto, multipartFile, authentication)));
 
     }
 
@@ -120,9 +124,10 @@ public class AdsController {
                     )
             }, tags = "Объявления"
     )
-    @GetMapping("//ads/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(adsMapper.mapToFullAds(adsService.getAds(id)));
+    @GetMapping("/ads/{id}")
+    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id, Authentication authentication) {
+        printLogInfo("GET", "getAds", "/" +  + id);
+        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id, authentication)));
     }
 
 
@@ -150,6 +155,7 @@ public class AdsController {
     )
     @DeleteMapping("/ads/{id}")
     public ResponseEntity<Void> removeAd(@PathVariable("id") Integer id, Authentication authentication) {
+        printLogInfo("DELETE", "removeAd", "/" + id);
         adsService.removeAd(id, authentication);
         return ResponseEntity.ok().build();
     }
@@ -183,7 +189,8 @@ public class AdsController {
     @PatchMapping("/ads/{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id,
                                             @RequestBody CreateAds createAds,  Authentication authentication) {
-        return ResponseEntity.ok(adsMapper.mapToAdsDto(adsService.updateAds(id, createAds, authentication)));
+        printLogInfo("PATCH", "updateAds", "/" + id);
+        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toDto(adsService.updateAds(id, createAds, authentication)));
     }
 
 
@@ -211,7 +218,8 @@ public class AdsController {
     )
     @GetMapping("/me")
     public  ResponseEntity<ResponseWrapperAds> getAdsMe(Authentication authentication) {
-               return ResponseEntity.ok(adsService.getAdsMe(authentication.getName()));
+        printLogInfo("GET", "getAdsMe", "/me");
+        return ResponseEntity.ok(adsService.getAdsMe(authentication));
     }
 
 
@@ -234,9 +242,15 @@ public class AdsController {
     @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id, @Parameter(required = true)
     @RequestPart(name = "image") @Valid MultipartFile image, Authentication authentication) throws IOException {
+        printLogInfo("PATCH", "updateImage", "/" + id);
         adsService.updateAdsImage(id, image, authentication);
         return ResponseEntity.ok().build();
         }
+
+    private void printLogInfo(String request, String name, String path) {
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
+                + request + ", адрес: /ads" + path);
+    }
 
 
     }

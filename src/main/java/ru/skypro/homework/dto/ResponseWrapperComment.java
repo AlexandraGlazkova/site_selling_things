@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class ResponseWrapperComment {
     private int count;
-    private List<Comment> results;
+    private List<CommentDto> results;
 }

@@ -5,20 +5,29 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.CommentDto;
-import ru.skypro.homework.dto.ResponseWrapperComment;
+import ru.skypro.homework.dto.*;
+import ru.skypro.homework.mapper.CommentMapperInterface;
+import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.CommentService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("ads")
 public class CommentController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     private final CommentService commentService;
+    private final AdsService adsService;
 
     @Operation(
             summary = "Получить комментарии объявления",
@@ -39,13 +48,19 @@ public class CommentController {
             tags = "Комментарии"
     )
     @GetMapping("{id}/comments")
-    public ResponseEntity<?> getComments(@PathVariable Integer id) {
-        if (commentService.getComments(id)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseWrapperComment getComments(@PathVariable Integer id) {
+//        return ResponseWrapper.of(adsCommentMapper.toDto(adsService.getComments(id)));
+//    }
+        printLogInfo("GET", "getComments", "/" + id + "comments");
+        List<CommentDto> commentDtoList = commentService.getComments(id).stream().map(x -> CommentMapperInterface.INSTANCE.toDto(x)).
+                collect(Collectors.toList());
+        ResponseWrapperComment responseWrapperComment = new ResponseWrapperComment();
+        responseWrapperComment.setCount(commentDtoList.size());
+        responseWrapperComment.setResults(commentDtoList);
+
+        return responseWrapperComment;
     }
+
 
     @Operation(
             summary = "Добавить комментарий к объявлению",
@@ -74,13 +89,13 @@ public class CommentController {
             tags = "Комментарии"
     )
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> addComment(@PathVariable Integer id, @RequestBody CommentDto commentDto) {
-        if(commentService.addComment(id, commentDto)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CommentDto commentDto, Authentication authentication) {
+        printLogInfo("POST", "addComment" ,  "/" + id + "/comments");
+        return ResponseEntity.ok(CommentMapperInterface.INSTANCE.toDto(commentService.addComment(id, commentDto, authentication)));
     }
+
+
+
 
     @Operation(
             summary = "Удалить комментарий",
@@ -105,13 +120,13 @@ public class CommentController {
             tags = "Комментарии"
     )
     @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
-        if(commentService.deleteComment(adId, commentId)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<Void> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId, Authentication authentication) {
+        printLogInfo("DELETE", "deleteComment" , "/" + adId + "/comments/" + commentId);
+        deleteComment(adId, commentId, authentication);
+        return ResponseEntity.ok().build();
     }
+
+
 
     @Operation(
             summary = "Обновить комментарий",
@@ -140,15 +155,19 @@ public class CommentController {
             tags = "Комментарии"
     )
     @PatchMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<?> updateComment(
+    public ResponseEntity<CommentDto> updateComment(
             @PathVariable Integer adId,
             @PathVariable Integer commentId,
-            @RequestBody CommentDto commentDto) {
-        if(commentService.updateComment(adId, commentId, commentDto)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+            @RequestBody CommentDto commentDto, Authentication authentication) {
+        printLogInfo("PATCH", "updateComment", "/" + adId + "/comments/" + commentId);
+        return ResponseEntity.ok(CommentMapperInterface.INSTANCE.toDto(commentService.updateComment(
+                adId, commentId, commentDto, authentication)));
+    }
+
+
+    private void printLogInfo(String request, String name, String path) {
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
+                + request + ", адрес: /ads" + path);
     }
 
 

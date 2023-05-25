@@ -1,47 +1,61 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.RegisterReq;
 import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.entity.User;
+import ru.skypro.homework.exception.IncorrectPasswordException;
+import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.mapper.UserMapperInterface;
+import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
+import javax.validation.ValidationException;
+
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-  private final UserDetailsManager manager;
-
+  private final UserDetailsService userDetailsService;
   private final PasswordEncoder encoder;
+  private final UserRepository userRepository;
 
-  public AuthServiceImpl(UserDetailsManager manager, PasswordEncoder passwordEncoder) {
-    this.manager = manager;
-    this.encoder = passwordEncoder;
-  }
+
 
   @Override
   public boolean login(String userName, String password) {
-    if (!manager.userExists(userName)) {
-      return false;
-    }
-    UserDetails userDetails = manager.loadUserByUsername(userName);
-    return encoder.matches(password, userDetails.getPassword());
+
+    try {
+      UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+      if (!encoder.matches(password, userDetails.getPassword())) {
+        throw new IncorrectPasswordException("Неверный пароль!");
+      }
+
+    } catch (UsernameNotFoundException e) {
+      throw new UserNotFoundException("Пользователь " + userName + " не существует!");
+    }  return true;
+
   }
+
 
   @Override
   public boolean register(RegisterReq registerReq, Role role) {
-    if (manager.userExists(registerReq.getUsername())) {
-      return false;
+    User user = UserMapperInterface.INSTANCE.toEntity(registerReq);
+    if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
+      throw new ValidationException("Пользователь " + registerReq.getUsername() + " уже зарегистрирован!");
     }
-    manager.createUser(
-        User.builder()
-            .passwordEncoder(this.encoder::encode)
-            .password(registerReq.getPassword())
-            .username(registerReq.getUsername())
-            .roles(role.name())
-            .build());
+    user.setPassword(encoder.encode(user.getPassword()));
+    user.setRole(role);
+    userRepository.save(user);
     return true;
   }
+
+
+
+
 }
