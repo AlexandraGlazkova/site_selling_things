@@ -31,7 +31,12 @@ public class ImageServiceImpl implements ImageService {
     public void removeImage (Image image) {
         imageRepository.delete(image);
     }
+
+    @Override
+    public Image read(Integer id) {
+        return imageRepository.findById(id).orElse(null);
     }
+}
 
 
 

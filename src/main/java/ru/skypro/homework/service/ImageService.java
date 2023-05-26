@@ -9,4 +9,6 @@ public interface ImageService {
     Image uploadImage(MultipartFile image) throws IOException;
 
     void removeImage (Image image);
+
+    Image read(Integer id);
 }
