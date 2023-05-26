@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import org.springframework.context.annotation.Bean;
 import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.FullAds;
@@ -20,8 +19,6 @@ public interface AdsMapperInterface extends WebMapper<AdsDto, Ads> {
     @Mapping(target = "id", source = "pk")
     @Mapping(target = "author.id", source = "author")
     @Mapping(target = "image", ignore = true)
-//    @Mapping(target = "price", source = "price")
-//    @Mapping(target = "title", source = "title")
     Ads toEntity(AdsDto dto);
 
     @Mapping(target = "pk", source = "id")
