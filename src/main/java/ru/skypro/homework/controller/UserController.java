@@ -157,13 +157,6 @@ public class UserController {
         return ResponseEntity.ok(). build();
     }
 
-//    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<?> updateImage(@PathVariable Integer id, @Parameter(required = true)
-//    @RequestPart(name = "image") @Valid MultipartFile image, Authentication authentication) throws IOException {
-//        printLogInfo("PATCH", "updateImage", "/" + id);
-//        adsService.updateAdsImage(id, image, authentication);
-//        return ResponseEntity.ok().build();
-//    }
 
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getImageById(@PathVariable("id") int id, Authentication authentication) {

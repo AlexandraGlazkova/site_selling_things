@@ -61,14 +61,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
     }
-//     if (image == null) {
-////        throw new ImageNotFoundException("Изображение не загружено");
-////    }
-//    Ads ads = findAdsById(id);
-//    checkPermissionsToWorkWithAds (ads, authentication);
-//        imageService.removeImage(ads.getImage());
-//        ads.setImage(imageService.uploadImage(image));
-//        adsRepository.save(ads);
 
     private User findUserByUsername(String username) {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->

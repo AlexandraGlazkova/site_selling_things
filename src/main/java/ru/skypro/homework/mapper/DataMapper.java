@@ -7,4 +7,5 @@ public class DataMapper {
     public Integer instantToInteger(Instant instant) {
         return (int) instant.atZone(ZoneOffset.ofHours(3)).toInstant().toEpochMilli();
     }
+
 }

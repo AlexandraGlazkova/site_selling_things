@@ -253,6 +253,7 @@ public class AdsController {
         return ResponseEntity.ok(imageService.getImageById(id).getData());
     }
 
+
     private void printLogInfo(String request, String name, String path) {
         LOGGER.info("Вызван метод: " + name + ", тип запроса: "
                 + request + ", адрес: /ads" + path);
