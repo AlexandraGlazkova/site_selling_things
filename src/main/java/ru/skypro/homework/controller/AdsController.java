@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("ads")
+@RequestMapping("/ads")
 public class AdsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
@@ -124,10 +124,10 @@ public class AdsController {
                     )
             }, tags = "Объявления"
     )
-    @GetMapping("/ads/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id, Authentication authentication) {
+    @GetMapping("/{id}")
+    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id) {
         printLogInfo("GET", "getAds", "/" +  + id);
-        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id, authentication)));
+        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id)));
     }
 
 
@@ -153,7 +153,7 @@ public class AdsController {
 
             }, tags = "Объявления"
     )
-    @DeleteMapping("/ads/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAd(@PathVariable("id") Integer id, Authentication authentication) {
         printLogInfo("DELETE", "removeAd", "/" + id);
         adsService.removeAd(id, authentication);
@@ -186,7 +186,7 @@ public class AdsController {
 
             }, tags = "Объявления"
     )
-    @PatchMapping("/ads/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable Integer id,
                                             @RequestBody CreateAds createAds,  Authentication authentication) {
         printLogInfo("PATCH", "updateAds", "/" + id);
@@ -239,13 +239,19 @@ public class AdsController {
                     )
             }, tags = "Объявления"
     )
-    @PatchMapping(value = "/ads/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id, @Parameter(required = true)
     @RequestPart(name = "image") @Valid MultipartFile image, Authentication authentication) throws IOException {
         printLogInfo("PATCH", "updateImage", "/" + id);
         adsService.updateAdsImage(id, image, authentication);
         return ResponseEntity.ok().build();
         }
+
+    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getAdsImage(@PathVariable("id") Integer id) {
+        printLogInfo("PATCH", "updateAdsImage", "/image/id");
+        return ResponseEntity.ok(imageService.getImageById(id).getData());
+    }
 
     private void printLogInfo(String request, String name, String path) {
         LOGGER.info("Вызван метод: " + name + ", тип запроса: "

@@ -4,9 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDto;
-import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.CreateComment;
-import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.Comment;
 
 @Mapper(componentModel = "spring")

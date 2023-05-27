@@ -11,7 +11,6 @@ import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.User;
 
 @Mapper(componentModel = "spring")
-//@Mapper(uses = UserMapper.class)
 public interface UserMapperInterface extends WebMapper<UserDto, User> {
 
     UserMapperInterface INSTANCE = Mappers.getMapper(UserMapperInterface.class);
