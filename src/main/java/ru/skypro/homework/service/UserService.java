@@ -8,7 +8,7 @@ import ru.skypro.homework.entity.User;
 import java.io.IOException;
 
 public interface UserService {
-    public void setPassword(String currentPassword, String newPassword, Authentication authentication);
+    void setPassword(String currentPassword, String newPassword, Authentication authentication);
 
     User getUser(Authentication authentication);
 

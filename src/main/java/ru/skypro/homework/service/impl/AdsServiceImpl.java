@@ -1,7 +1,6 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,6 @@ public class AdsServiceImpl implements AdsService {
         User user = userRepository.findByEmailIgnoreCase(authentication.getName()).orElseThrow(() ->
                 new UserNotFoundException("Пользователь с e-mail" + authentication.getName() + "не найден"));
         Ads ads = AdsMapperInterface.INSTANCE.toEntity(createAds);
-        checkPermissionsToWorkWithAds (ads, authentication);
         ads.setAuthor(user);
         ads.setImage(imageService.uploadImage(image));
         return adsRepository.save(ads);
@@ -66,9 +64,8 @@ public class AdsServiceImpl implements AdsService {
 
 
     @Override
-    public Ads getAds(Integer id, Authentication authentication) {
+    public Ads getAds(Integer id) {
         Ads ads = findAdsById(id);
-        checkPermissionsToWorkWithAds (ads, authentication);
         return ads;
     }
 

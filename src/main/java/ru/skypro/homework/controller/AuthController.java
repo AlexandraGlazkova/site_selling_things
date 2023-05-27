@@ -24,7 +24,7 @@ import static ru.skypro.homework.dto.Role.USER;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
     @Operation(
             summary = "Авторизация пользователя",
@@ -71,7 +71,7 @@ public class AuthController {
     }
 
     private void printLogInfo(String request, String name, String path) {
-        logger.info("Вызван метод: " + name + ", тип запроса: "
+        LOGGER.info("Вызван метод: " + name + ", тип запроса: "
                 + request + ", адрес " + path);
     }
 }

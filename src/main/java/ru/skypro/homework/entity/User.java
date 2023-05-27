@@ -2,6 +2,7 @@ package ru.skypro.homework.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ru.skypro.homework.dto.Role;
 
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@Getter
 public class User {
 
     /**
