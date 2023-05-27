@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.entity.Image;
-import ru.skypro.homework.exception.ImageNotFoundException;
 import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.service.ImageService;
 
@@ -33,13 +32,13 @@ public class ImageServiceImpl implements ImageService {
         imageRepository.delete(image);
     }
 
-
     @Override
-    public Image getImageById(Integer id) {
-        return imageRepository.findById(id).orElseThrow(
-                () -> new ImageNotFoundException("Картинка с id " + id + " не найдена!"));
+    public Image read(Integer id) {
+        return imageRepository.findById(id).orElse(null);
     }
 }
+
+
 
 
 
