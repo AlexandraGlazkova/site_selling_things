@@ -7,7 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.User;
+import ru.skypro.homework.exception.ImageNotFoundException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
@@ -56,8 +58,17 @@ public class UserServiceImpl implements UserService {
             imageService.removeImage(user.getImage());
         }
         user.setImage(imageService.uploadImage(image));
+        userRepository.save(user);
 
     }
+//     if (image == null) {
+////        throw new ImageNotFoundException("Изображение не загружено");
+////    }
+//    Ads ads = findAdsById(id);
+//    checkPermissionsToWorkWithAds (ads, authentication);
+//        imageService.removeImage(ads.getImage());
+//        ads.setImage(imageService.uploadImage(image));
+//        adsRepository.save(ads);
 
     private User findUserByUsername(String username) {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->

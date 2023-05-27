@@ -249,7 +249,7 @@ public class AdsController {
 
     @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getAdsImage(@PathVariable("id") Integer id) {
-        printLogInfo("PATCH", "updateAdsImage", "/image/id");
+        printLogInfo("GET", "getAdsImage", "/image/id");
         return ResponseEntity.ok(imageService.getImageById(id).getData());
     }
 
