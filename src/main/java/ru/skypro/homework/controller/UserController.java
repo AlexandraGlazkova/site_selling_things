@@ -158,7 +158,7 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getImageById(@PathVariable("id") int id, Authentication authentication) {
         printLogInfo("GET", "getImageById", "/image/{id}");
         return ResponseEntity.ok(imageService.getImageById(userService.getUser(authentication).getImage().getId()).getData());

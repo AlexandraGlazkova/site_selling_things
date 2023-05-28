@@ -51,6 +51,6 @@ create table images
 alter table  users
     add column  password text;
 
---changeset glazkovaa:3
-alter table images add column user_id int;
+
+
 

@@ -64,7 +64,7 @@ public class AdsServiceImpl implements AdsService {
 
 
     @Override
-    public Ads getAds(Integer id) {
+    public Ads getAds(Integer id, Authentication authentication) {
         Ads ads = findAdsById(id);
         return ads;
     }
