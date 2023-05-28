@@ -9,21 +9,23 @@ import ru.skypro.homework.dto.CreateComment;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.Image;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+
 @Mapper(componentModel = "spring", uses = UserMapperInterface.class)
 public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
 
     CommentMapperInterface INSTANCE = Mappers.getMapper(CommentMapperInterface.class);
-     String USERS_IMAGES = "/users/image/";
+    String USERS_IMAGES = "/users/image/";
 
     @Mapping(target = "id", source = "pk")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "ads", ignore = true)
-    //@Mapping(target = "author.image", ignore = true)
     Comment toEntity(CommentDto dto);
 
     @Mapping(source = "id", target = "pk")
-    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdAt", qualifiedByName = "instantToInteger")
     @Mapping(target = "author", source = "author.id")
     @Mapping(target = "authorFirstName", source = "author.firstName")
     @Mapping(target = "authorImage", source = "author.image", qualifiedByName = "imageMappingComment")
@@ -33,7 +35,6 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "ads", ignore = true)
-    //@Mapping(target = "image", source = "author.image", qualifiedByName = "imageMapping")
     Comment toEntity(CreateComment dto);
 
     @Named("imageMappingComment")
@@ -42,6 +43,10 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
             return null;
         }
         return USERS_IMAGES + image.getId();
+    }
+    @Named("instantToInteger")
+    default long instantToInteger(Instant instant) {
+        return instant.atZone(ZoneOffset.ofHours(3)).toInstant().toEpochMilli();
     }
 
 }
