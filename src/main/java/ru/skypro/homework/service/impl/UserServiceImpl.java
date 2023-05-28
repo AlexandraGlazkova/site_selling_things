@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         if (user.getImage() != null) {
             imageService.removeImage(user.getImage());
         }
-        user.setImage(imageService.uploadImage(image));
+        user.setImage(imageService.uploadImageForUser(image, user));
         userRepository.save(user);
 
     }

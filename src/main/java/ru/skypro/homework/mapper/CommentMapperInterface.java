@@ -19,10 +19,9 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
     String USERS_IMAGES = "/users/image/";
 
     @Mapping(target = "id", source = "pk")
-    @Mapping(target = "createdAt", constant = "")
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "ads", ignore = true)
-        //@Mapping(target = "author.image", ignore = true)
     Comment toEntity(CommentDto dto);
 
     @Mapping(source = "id", target = "pk")

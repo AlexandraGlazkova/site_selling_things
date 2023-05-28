@@ -125,9 +125,9 @@ public class AdsController {
             }, tags = "Объявления"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id) {
+    public ResponseEntity<FullAds> getAds(@PathVariable("id") Integer id, Authentication authentication) {
         printLogInfo("GET", "getAds", "/" +  + id);
-        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id)));
+        return ResponseEntity.ok(AdsMapperInterface.INSTANCE.toFullAdsDto(adsService.getAds(id, authentication)));
     }
 
 
@@ -247,7 +247,7 @@ public class AdsController {
         return ResponseEntity.ok().build();
         }
 
-    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getAdsImage(@PathVariable("id") Integer id) {
         printLogInfo("GET", "getAdsImage", "/image/id");
         return ResponseEntity.ok(imageService.getImageById(id).getData());
