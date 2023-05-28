@@ -22,7 +22,7 @@ ___
 
 # В проекте используются:
 # Backend:
--Java 11
+- Java 11
 - Maven
 - Spring Boot
 - Spring Web
