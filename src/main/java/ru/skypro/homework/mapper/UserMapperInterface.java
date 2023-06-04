@@ -28,6 +28,7 @@ public interface UserMapperInterface extends WebMapper<UserDto, User> {
     @Mapping(target = "image", source = "image", qualifiedByName = "imageMapping")
     UserDto toDto(User entity);
 
+
     @Named("imageMapping")
     default String imageMapping(Image image) {
         if (image == null) {

@@ -6,16 +6,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.exception.ImageNotFoundException;
+import ru.skypro.homework.exception.IncorrectPasswordException;
 import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
-
 import java.io.IOException;
+
+
+import static ru.skypro.homework.constant.error.USER_NOT_FOUND_EMAIL;
+import static ru.skypro.homework.constant.error.WRONG_PASS_MSG;
 
 
 @Service
@@ -28,13 +32,20 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
 
-    @Override
-    public void setPassword(String currentPassword, String newPassword, Authentication authentication) {
-        User user = findUserByUsername(authentication.getName());
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
 
+    @Override
+    public User setPassword(NewPassword newPassword, Authentication authentication) throws IOException{
+        User user = findUserByUsername(authentication.getName());
+        String encryptedPassword = user.getPassword();
+        if (!passwordEncoder.matches(newPassword.getCurrentPassword(), encryptedPassword)) {
+            throw new IncorrectPasswordException(WRONG_PASS_MSG.formatted(authentication.getName()));
+        }
+        String newPasswordUser = newPassword.getNewPassword();
+        String encodedPassword = passwordEncoder.encode(newPasswordUser);
+        user.setPassword(encodedPassword);
+
+        return userRepository.save(user);
+    }
 
     @Override
     public User getUser(Authentication authentication) {
@@ -64,8 +75,9 @@ public class UserServiceImpl implements UserService {
 
     private User findUserByUsername(String username) {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->
-                new UserNotFoundException("Пользователь с e-mail" + username + "не найден"));
+                new UserNotFoundException(USER_NOT_FOUND_EMAIL.formatted(username)));
     }
+
 
 }
 

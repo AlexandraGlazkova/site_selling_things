@@ -33,7 +33,7 @@
 - Lombok
 - Stream API
 -SQL:
-- PostgreSQL
+- PostgresSQL
 - Liquibase
 # Frontend:
 - Docker image

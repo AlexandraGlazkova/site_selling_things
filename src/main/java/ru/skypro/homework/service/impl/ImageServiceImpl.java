@@ -12,6 +12,8 @@ import ru.skypro.homework.service.ImageService;
 import javax.transaction.Transactional;
 import java.io.IOException;
 
+import static ru.skypro.homework.constant.error.IMAGE_BY_ID_NOT_FOUND;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -24,8 +26,10 @@ public class ImageServiceImpl implements ImageService {
             Image image = new Image();
             image.setData(imageFile.getBytes());
             image.setFileSize(imageFile.getSize());
+            image.setFilePath(imageFile.getOriginalFilename());
             image.setMediaType(imageFile.getContentType());
             image.setData(imageFile.getBytes());
+
             return imageRepository.save(image);
         }
 
@@ -35,6 +39,7 @@ public class ImageServiceImpl implements ImageService {
         Image image = new Image();
         image.setData(imageFile.getBytes());
         image.setFileSize(imageFile.getSize());
+        image.setFilePath(imageFile.getOriginalFilename());
         image.setMediaType(imageFile.getContentType());
         image.setData(imageFile.getBytes());
         image.setUser(user);
@@ -50,7 +55,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image getImageById(Integer id) {
         return imageRepository.findById(id).orElseThrow(
-                () -> new ImageNotFoundException("Картинка с id " + id + " не найдена!"));
+                () -> new ImageNotFoundException(IMAGE_BY_ID_NOT_FOUND.formatted(id)));
     }
 }
 

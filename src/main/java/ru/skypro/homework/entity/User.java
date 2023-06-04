@@ -8,6 +8,8 @@ import ru.skypro.homework.dto.Role;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 
 @Entity
@@ -28,6 +30,9 @@ public class User {
     /**
      * поле - логин пользователя
      */
+    @Column(name = "email",unique = true)
+    @Email(message = "формат email не верный")
+    @NotBlank(message = "email не может быть пустым")
     private String email;
 
     /**
@@ -62,6 +67,8 @@ public class User {
     /**
      * поле - пароль пользователя
      */
+    @Column(name = "password")
+    @NotBlank(message = "не может быть пустым")
     private String password;
 
 
