@@ -1,6 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,7 +10,6 @@ import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.IncorrectPasswordException;
 import ru.skypro.homework.exception.UserNotFoundException;
-import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
@@ -32,9 +30,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
 
-
     @Override
-    public User setPassword(NewPassword newPassword, Authentication authentication) throws IOException{
+    public User setPassword(NewPassword newPassword,Authentication authentication) throws IOException{
         User user = findUserByUsername(authentication.getName());
         String encryptedPassword = user.getPassword();
         if (!passwordEncoder.matches(newPassword.getCurrentPassword(), encryptedPassword)) {
@@ -43,8 +40,8 @@ public class UserServiceImpl implements UserService {
         String newPasswordUser = newPassword.getNewPassword();
         String encodedPassword = passwordEncoder.encode(newPasswordUser);
         user.setPassword(encodedPassword);
-
-        return userRepository.save(user);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -80,4 +77,3 @@ public class UserServiceImpl implements UserService {
 
 
 }
-

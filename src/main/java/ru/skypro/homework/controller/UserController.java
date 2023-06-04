@@ -2,7 +2,6 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mapper.UserMapperInterface;
 import ru.skypro.homework.service.AuthService;
@@ -26,7 +24,7 @@ import ru.skypro.homework.service.UserService;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Locale;
+
 
 
 @CrossOrigin(value = "http://localhost:3000")
