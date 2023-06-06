@@ -29,7 +29,11 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
 
-
+    /**
+     * Смена пароля
+     * @param newPassword новый пароль
+     * @param  authentication авторизированный пользователь
+     */
     @Override
     public User setPassword(NewPassword newPassword,Authentication authentication) throws IOException{
         User user = findUserByUsername(authentication.getName());
@@ -43,12 +47,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return user;
     }
-
+    /**
+     * Получение пользователя
+     * @param  authentication авторизированный пользователь
+     */
     @Override
     public User getUser(Authentication authentication) {
         return findUserByUsername(authentication.getName());
     }
-
+    /**
+     * Редактирование пользователя
+     * @param userDto
+     * @param  authentication авторизированный пользователь
+     */
     @Override
     public User updateUser(UserDto userDto, Authentication authentication) {
         User user = findUserByUsername(authentication.getName());
@@ -57,7 +68,11 @@ public class UserServiceImpl implements UserService {
         user.setPhone(userDto.getPhone());
         return userRepository.save(user);
     }
-
+    /**
+     * Изменение аватарки пользователя
+     * @param image выбор аватарки
+     * @param  authentication авторизированный пользователь
+     */
     @Override
     public void updateUserImage(MultipartFile image, Authentication authentication) throws IOException {
 
@@ -69,7 +84,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
     }
-
+    /**
+     * Метод для нахождения пользователя по email
+     * * @param username email
+     */
     private User findUserByUsername(String username) {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->
                 new UserNotFoundException(USER_NOT_FOUND_EMAIL.formatted(username)));
