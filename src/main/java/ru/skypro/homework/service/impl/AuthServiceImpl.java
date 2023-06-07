@@ -27,7 +27,11 @@ public class AuthServiceImpl implements AuthService {
   private final PasswordEncoder encoder;
   private final UserRepository userRepository;
 
-
+  /**
+   * Вход в личный кабинет авторизированного пользователя
+   * * @param userName
+   * * @param password
+   */
 
   @Override
   public boolean login(String userName, String password) {
@@ -43,7 +47,11 @@ public class AuthServiceImpl implements AuthService {
     }  return true;
 
   }
-
+  /**
+   * Регистрация пользователя
+   * * @param registerReq
+   * * @param role
+   */
 
   @Override
   public boolean register(RegisterReq registerReq, Role role) {

@@ -19,7 +19,10 @@ import static ru.skypro.homework.constant.error.IMAGE_BY_ID_NOT_FOUND;
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
-
+    /**
+     * Метод загрузки картинок/фото
+     * * @param imageFile
+     */
     @Override
     public Image uploadImage(MultipartFile imageFile) throws IOException {
 
@@ -32,7 +35,11 @@ public class ImageServiceImpl implements ImageService {
 
             return imageRepository.save(image);
         }
-
+    /**
+     * Метод загрузки аватарок
+     * * @param imageFile -фото
+     * * @param user - пользователь
+     */
     @Override
     public Image uploadImageForUser(MultipartFile imageFile, User user) throws IOException {
 
@@ -45,12 +52,18 @@ public class ImageServiceImpl implements ImageService {
         image.setUser(user);
         return imageRepository.save(image);
     }
-
+    /**
+     * Метод удаления фото
+     * * @param imageFile
+     */
     @Override
     public void removeImage (Image image) {
         imageRepository.delete(image);
     }
-
+    /**
+     * Метод получения картинкинки по id
+     * * @param id
+     */
 
     @Override
     public Image getImageById(Integer id) {

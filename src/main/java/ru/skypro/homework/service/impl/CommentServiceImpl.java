@@ -34,12 +34,21 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final AdsRepository adsRepository;
-
+    /**
+     * Метод получения комментариев по id
+     * * @param imageFile
+     */
     @Override
     public Collection <Comment> getComments(Integer adsId) {
         return commentRepository.findAllByAdsId(adsId);
     }
 
+    /**
+     * Метод добавления комментариев для авторизированного пользователя
+     * * @param id
+     * * @param createComment
+     * * * @param authentication
+     */
 
     @Override
     public Comment addComment(Integer id, CreateComment createComment, Authentication authentication) {
@@ -51,7 +60,12 @@ public class CommentServiceImpl implements CommentService {
         comment.setCreatedAt(Instant.now());
         return commentRepository.save(comment);
     }
-
+    /**
+     * Метод добавления комментариев для авторизированного пользователя
+     * * @param adId
+     * * @param commentId
+     * * * @param authentication
+     */
 
     @Override
     public Comment deleteComment(Integer adId, Integer commentId, Authentication authentication) {
@@ -61,7 +75,12 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.delete(comment);
         return comment;
     }
-
+    /**
+     * Метод добавления комментариев для авторизированного пользователя
+     * * @param adId
+     * * @param commentId
+     * * @param authentication
+     */
 
     @Override
     public Comment updateComment(Integer adId, Integer commentId, CommentDto commentDto, Authentication authentication) {
@@ -71,7 +90,11 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(commentDto.getText());
         return commentRepository.save(comment);
     }
-
+    /**
+     * Метод проверки пользователя на возможность работы с комментариями
+     * * @param comment
+     * * @param authentication
+     */
 
     public boolean checkPermissionsToWorkWithComment(Comment comment, Authentication authentication) {
         String username = authentication.getName();
@@ -82,12 +105,14 @@ public class CommentServiceImpl implements CommentService {
         }
         return true;
     };
-
+    /**
+     * Поиск объявления по id
+     * * @param id
+     */
     public Ads findAdsById(Integer id) {
 
         return adsRepository.findById(id).orElseThrow(
                 () -> new AdsNotFoundException(AD_NOT_FOUND_ID.formatted(id)));
     }
-
 
 }
