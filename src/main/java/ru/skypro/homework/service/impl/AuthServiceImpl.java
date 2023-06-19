@@ -29,8 +29,8 @@ public class AuthServiceImpl implements AuthService {
 
   /**
    * Вход в личный кабинет авторизированного пользователя
-   * * @param userName
-   * * @param password
+   * @param userName email пользователя
+   * @param password пароль
    */
 
   @Override
@@ -49,8 +49,8 @@ public class AuthServiceImpl implements AuthService {
   }
   /**
    * Регистрация пользователя
-   * * @param registerReq
-   * * @param role
+   *  @param registerReq
+   *  @param role
    */
 
   @Override

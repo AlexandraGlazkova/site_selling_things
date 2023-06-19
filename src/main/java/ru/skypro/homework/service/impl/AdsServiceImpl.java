@@ -39,9 +39,9 @@ public class AdsServiceImpl implements AdsService {
 
     /**
      * Добавление объявления авторизированным пользователем
-     * * @param createAds
-     * * @param image
-     * * @param authentication
+     * @param createAds
+     * @param image
+     * @param authentication
      */
 
     @Override
@@ -56,8 +56,8 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Удаление объявления авторизированным пользователем
-     * * @param id
-     * * @param authentication
+     * @param id
+     * @param authentication
      */
     @Override
     public Ads removeAd(Integer id, Authentication authentication) {
@@ -78,8 +78,8 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Получение объявления по id
-     * * @param id
-     * * @param authentication
+     * @param id
+     * @param authentication
      */
 
     @Override
@@ -90,9 +90,9 @@ public class AdsServiceImpl implements AdsService {
 
     /**
      * Изменение объявления авторизированным пользователем
-     * * @param id
-     * * @param createAds
-     * * @param authentication
+     * @param id
+     * @param createAds
+     * @param authentication
      */
     @Override
     public Ads updateAds(Integer id, CreateAds createAds, Authentication authentication) {
@@ -105,8 +105,8 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Получение объявлений по email пользователя
-     * * @param id
-     * * @param authentication
+     * @param id
+     * @param authentication
      */
     @Override
     public ResponseWrapperAds getAdsMe(Authentication authentication) {
@@ -123,9 +123,9 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Изменение картинки объявления пользователя
-     * * @param id
-     * * @param image
-     * * @param authentication
+     * @param id
+     * @param image
+     * @param authentication
      */
 
     @Override
@@ -141,7 +141,7 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Получение объявления по названию
-     * * @param title
+     * @param title
      */
     @Override
     public ResponseWrapperAds getAdsByTitleLike(String title) {
@@ -154,7 +154,7 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Поиск объявления по id
-     * * @param id
+     * @param id
      */
 
     public Ads findAdsById(Integer id) {
@@ -164,8 +164,8 @@ public class AdsServiceImpl implements AdsService {
     }
     /**
      * Проверка роли на работу с объявлениями
-     * * @param ads
-     * * @param authentication
+     * @param ads
+     * @param authentication
      */
     public boolean checkPermissionsToWorkWithAds(Ads ads, Authentication authentication) {
         String username = authentication.getName();

@@ -35,8 +35,8 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final AdsRepository adsRepository;
     /**
-     * Метод получения комментариев по id
-     * * @param imageFile
+     * Получение комментариев по id
+     * @param adsId
      */
     @Override
     public Collection <Comment> getComments(Integer adsId) {
@@ -44,10 +44,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Метод добавления комментариев для авторизированного пользователя
-     * * @param id
-     * * @param createComment
-     * * * @param authentication
+     * Добавление комментариев для авторизированного пользователя
+     * @param id
+     * @param createComment
+     * @param authentication
      */
 
     @Override
@@ -61,10 +61,10 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment);
     }
     /**
-     * Метод добавления комментариев для авторизированного пользователя
-     * * @param adId
-     * * @param commentId
-     * * * @param authentication
+     * Удаление комментариев для авторизированного пользователя
+     * @param adId
+     * @param commentId
+     * @param authentication
      */
 
     @Override
@@ -76,10 +76,10 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
     /**
-     * Метод добавления комментариев для авторизированного пользователя
-     * * @param adId
-     * * @param commentId
-     * * @param authentication
+     * Добавление комментариев для авторизированного пользователя
+     * @param adId
+     * @param commentId
+     * @param authentication
      */
 
     @Override
@@ -91,9 +91,9 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment);
     }
     /**
-     * Метод проверки пользователя на возможность работы с комментариями
-     * * @param comment
-     * * @param authentication
+     * Проверка пользователя на возможность работы с комментариями
+     * @param comment
+     * @param authentication
      */
 
     public boolean checkPermissionsToWorkWithComment(Comment comment, Authentication authentication) {
@@ -107,7 +107,7 @@ public class CommentServiceImpl implements CommentService {
     };
     /**
      * Поиск объявления по id
-     * * @param id
+     * @param id
      */
     public Ads findAdsById(Integer id) {
 

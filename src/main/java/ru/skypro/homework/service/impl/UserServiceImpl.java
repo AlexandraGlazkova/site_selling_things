@@ -85,8 +85,8 @@ public class UserServiceImpl implements UserService {
 
     }
     /**
-     * Метод для нахождения пользователя по email
-     * * @param username email
+     * Поиск пользователя по email
+     * @param username email
      */
     private User findUserByUsername(String username) {
         return userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->
