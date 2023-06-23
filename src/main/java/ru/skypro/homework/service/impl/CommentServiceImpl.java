@@ -13,17 +13,15 @@ import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.AdsNotFoundException;
 import ru.skypro.homework.exception.CommentNotFoundException;
 import ru.skypro.homework.exception.UserNotFoundException;
-import ru.skypro.homework.mapper.AdsMapperInterface;
-import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.mapper.CommentMapperInterface;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
-import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Service
@@ -32,7 +30,6 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final ImageService imageService;
     private final UserService userService;
     private final AdsRepository adsRepository;
 
@@ -43,14 +40,15 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public Comment addComment(Integer id, CommentDto commentDto, Authentication authentication) {
-        Comment comment = CommentMapperInterface.INSTANCE.toEntity(commentDto);
+    public Comment addComment(Integer id, CreateComment createComment, Authentication authentication) {
+        Comment comment = CommentMapperInterface.INSTANCE.toEntity(createComment);
         User user = userService.getUser(authentication);
         comment.setAuthor(user);
         comment.setAds(findAdsById(id));
         comment.setCreatedAt(Instant.now());
         return commentRepository.save(comment);
     }
+
 
     @Override
     public Comment deleteComment(Integer adId, Integer commentId, Authentication authentication) {

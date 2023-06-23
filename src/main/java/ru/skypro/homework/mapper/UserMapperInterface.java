@@ -11,11 +11,10 @@ import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.User;
 
 @Mapper(componentModel = "spring")
-//@Mapper(uses = UserMapper.class)
 public interface UserMapperInterface extends WebMapper<UserDto, User> {
 
     UserMapperInterface INSTANCE = Mappers.getMapper(UserMapperInterface.class);
-    String ADS_IMAGES = "/users/image/";
+    String USERS_IMAGES = "/users/image/";
 
     @Mapping(target = "role", defaultValue = "USER")
     @Mapping(source = "username", target = "email")
@@ -34,6 +33,6 @@ public interface UserMapperInterface extends WebMapper<UserDto, User> {
         if (image == null) {
             return null;
         }
-        return ADS_IMAGES + image.getId();
+        return USERS_IMAGES + image.getId();
     }
 }

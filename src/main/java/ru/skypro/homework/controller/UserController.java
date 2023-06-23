@@ -2,6 +2,7 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,23 +16,27 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mapper.UserMapperInterface;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final AuthService authService;
+    private final ImageService imageService;
 
     @Operation(
             summary = "Обновление пароля",
@@ -146,10 +151,17 @@ public class UserController {
             tags = "Пользователи"
     )
     @PatchMapping(value = "/me/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> updateUserImage(@RequestPart(name = "image") MultipartFile image, Authentication authentication) throws IOException {
+    public ResponseEntity<?> updateUserImage(@RequestPart(name = "image") @Valid MultipartFile image, Authentication authentication) throws IOException {
         printLogInfo("PATCH", "updateUserImage", "/me/image");
         userService.updateUserImage(image, authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(). build();
+    }
+
+
+    @GetMapping(value = "/image/{id}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public ResponseEntity<byte[]> getImageById(@PathVariable("id") int id, Authentication authentication) {
+        printLogInfo("GET", "getImageById", "/image/{id}");
+        return ResponseEntity.ok(imageService.getImageById(userService.getUser(authentication).getImage().getId()).getData());
     }
 
     private void printLogInfo(String request, String name, String path) {

@@ -23,11 +23,10 @@ import java.util.stream.Collectors;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("ads")
+@RequestMapping("/ads")
 public class CommentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     private final CommentService commentService;
-    private final AdsService adsService;
 
     @Operation(
             summary = "Получить комментарии объявления",
@@ -47,7 +46,7 @@ public class CommentController {
             },
             tags = "Комментарии"
     )
-    @GetMapping("{id}/comments")
+    @GetMapping("/{id}/comments")
     public ResponseWrapperComment getComments(@PathVariable Integer id) {
 //        return ResponseWrapper.of(adsCommentMapper.toDto(adsService.getComments(id)));
 //    }
@@ -89,9 +88,9 @@ public class CommentController {
             tags = "Комментарии"
     )
     @PostMapping("/{id}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CommentDto commentDto, Authentication authentication) {
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @RequestBody CreateComment createComment, Authentication authentication) {
         printLogInfo("POST", "addComment" ,  "/" + id + "/comments");
-        return ResponseEntity.ok(CommentMapperInterface.INSTANCE.toDto(commentService.addComment(id, commentDto, authentication)));
+        return ResponseEntity.ok(CommentMapperInterface.INSTANCE.toDto(commentService.addComment(id, createComment, authentication)));
     }
 
 
@@ -119,13 +118,13 @@ public class CommentController {
             },
             tags = "Комментарии"
     )
+
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId, Authentication authentication) {
         printLogInfo("DELETE", "deleteComment" , "/" + adId + "/comments/" + commentId);
-        deleteComment(adId, commentId, authentication);
+        commentService.deleteComment(adId, commentId, authentication);
         return ResponseEntity.ok().build();
     }
-
 
 
     @Operation(

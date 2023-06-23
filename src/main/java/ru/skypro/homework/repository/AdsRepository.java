@@ -14,4 +14,5 @@ public interface AdsRepository extends JpaRepository<Ads,Integer> {
     List<Ads> findByTitleContainingIgnoreCase(String title);
 
 
+
 }

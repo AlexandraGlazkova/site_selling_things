@@ -2,17 +2,21 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDto;
-import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.CreateComment;
-import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.entity.Image;
 
-@Mapper(componentModel = "spring")
+import java.time.Instant;
+import java.time.ZoneOffset;
+
+@Mapper(componentModel = "spring", uses = UserMapperInterface.class)
 public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
 
     CommentMapperInterface INSTANCE = Mappers.getMapper(CommentMapperInterface.class);
+    String USERS_IMAGES = "/users/image/";
 
     @Mapping(target = "id", source = "pk")
     @Mapping(target = "createdAt", ignore = true)
@@ -21,8 +25,10 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
     Comment toEntity(CommentDto dto);
 
     @Mapping(source = "id", target = "pk")
-    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "createdAt", qualifiedByName = "instantToInteger")
     @Mapping(target = "author", source = "author.id")
+    @Mapping(target = "authorFirstName", source = "author.firstName")
+    @Mapping(target = "authorImage", source = "author.image", qualifiedByName = "imageMappingComment")
     CommentDto toDto(Comment entity);
 
     @Mapping(target = "id", ignore = true)
@@ -31,6 +37,17 @@ public interface CommentMapperInterface extends WebMapper<CommentDto, Comment> {
     @Mapping(target = "ads", ignore = true)
     Comment toEntity(CreateComment dto);
 
+    @Named("imageMappingComment")
+    default String imageMappingComment(Image image) {
+        if (image == null) {
+            return null;
+        }
+        return USERS_IMAGES + image.getId();
+    }
+    @Named("instantToInteger")
+    default long instantToInteger(Instant instant) {
+        return instant.atZone(ZoneOffset.ofHours(3)).toInstant().toEpochMilli();
+    }
 
 }
 
