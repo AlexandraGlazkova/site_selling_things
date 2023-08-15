@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.skypro.homework.constant.error.*;
+
 @Service
 @RequiredArgsConstructor
 
@@ -35,33 +37,50 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
 
-
+    /**
+     * Добавление объявления авторизированным пользователем
+     * @param createAds
+     * @param image
+     * @param authentication
+     */
 
     @Override
     public Ads addAd(CreateAds createAds, MultipartFile image, Authentication authentication) throws IOException {
         User user = userRepository.findByEmailIgnoreCase(authentication.getName()).orElseThrow(() ->
-                new UserNotFoundException("Пользователь с e-mail" + authentication.getName() + "не найден"));
+                new UserNotFoundException(USER_NOT_FOUND_EMAIL.formatted(authentication.getName())));
+
         Ads ads = AdsMapperInterface.INSTANCE.toEntity(createAds);
         ads.setAuthor(user);
         ads.setImage(imageService.uploadImage(image));
         return adsRepository.save(ads);
     }
-
+    /**
+     * Удаление объявления авторизированным пользователем
+     * @param id
+     * @param authentication
+     */
     @Override
     public Ads removeAd(Integer id, Authentication authentication) {
         Ads ads = findAdsById(id);
         checkPermissionsToWorkWithAds (ads, authentication);
         imageRepository.deleteImageByAdsId(id);
         adsRepository.delete(ads);
+
         return ads;
     }
 
-
+    /**
+     * Получение всех объявлений
+     */
     @Override
     public Collection<Ads> getAllAds() {
         return adsRepository.findAll();
     }
-
+    /**
+     * Получение объявления по id
+     * @param id
+     * @param authentication
+     */
 
     @Override
     public Ads getAds(Integer id, Authentication authentication) {
@@ -69,7 +88,12 @@ public class AdsServiceImpl implements AdsService {
         return ads;
     }
 
-
+    /**
+     * Изменение объявления авторизированным пользователем
+     * @param id
+     * @param createAds
+     * @param authentication
+     */
     @Override
     public Ads updateAds(Integer id, CreateAds createAds, Authentication authentication) {
         Ads ads = findAdsById(id);
@@ -79,26 +103,35 @@ public class AdsServiceImpl implements AdsService {
         ads.setTitle(createAds.getTitle());
         return adsRepository.save(ads);
     }
-
+    /**
+     * Получение объявлений по email пользователя
+     * @param id
+     * @param authentication
+     */
     @Override
     public ResponseWrapperAds getAdsMe(Authentication authentication) {
         String username = authentication.getName();
         User user = userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->
-                new UserNotFoundException("Пользователь с e-mail" + username + "не найден"));
+                new UserNotFoundException(USER_NOT_FOUND_EMAIL.formatted(username)));
 
-        List<AdsDto> adsDtoList = adsRepository.findAllByAuthorId(user.getId()).stream().map(x -> AdsMapperInterface.INSTANCE.toDto(x)).
-                collect(Collectors.toList());
+        List<AdsDto> adsDtoList = adsRepository.findAllByAuthorId(user.getId()).stream().map(x ->
+                AdsMapperInterface.INSTANCE.toDto(x)).collect(Collectors.toList());
         ResponseWrapperAds responseWrapperAdsDto = new ResponseWrapperAds();
         responseWrapperAdsDto.setCount(adsDtoList.size());
         responseWrapperAdsDto.setResults(adsDtoList);
         return responseWrapperAdsDto;
     }
-
+    /**
+     * Изменение картинки объявления пользователя
+     * @param id
+     * @param image
+     * @param authentication
+     */
 
     @Override
     public void updateAdsImage(Integer id, MultipartFile image, Authentication authentication) throws IOException {
         if (image == null) {
-            throw new ImageNotFoundException("Изображение не загружено");
+            throw new ImageNotFoundException(IMAGE_NOT_LOADED.formatted());
         }
         Ads ads = findAdsById(id);
         checkPermissionsToWorkWithAds (ads, authentication);
@@ -106,7 +139,10 @@ public class AdsServiceImpl implements AdsService {
         ads.setImage(imageService.uploadImage(image));
         adsRepository.save(ads);
     }
-
+    /**
+     * Получение объявления по названию
+     * @param title
+     */
     @Override
     public ResponseWrapperAds getAdsByTitleLike(String title) {
         List<AdsDto> ads = adsRepository.findByTitleContainingIgnoreCase(title).stream()
@@ -116,24 +152,29 @@ public class AdsServiceImpl implements AdsService {
         responseWrapperAdsDto.setResults(ads);
         return responseWrapperAdsDto;
     }
-
+    /**
+     * Поиск объявления по id
+     * @param id
+     */
 
     public Ads findAdsById(Integer id) {
 
         return adsRepository.findById(id).orElseThrow(
-                () -> new AdsNotFoundException("Объявление с id " + id + " не найдено"));
+                () -> new AdsNotFoundException(AD_NOT_FOUND_ID.formatted(id)));
     }
-
+    /**
+     * Проверка роли на работу с объявлениями
+     * @param ads
+     * @param authentication
+     */
     public boolean checkPermissionsToWorkWithAds(Ads ads, Authentication authentication) {
         String username = authentication.getName();
         User user = userRepository.findByEmailIgnoreCase(username).orElseThrow(() ->
-                new UserNotFoundException("Пользователь с e-mail" + username + "не найден"));
+                new UserNotFoundException(USER_NOT_FOUND_EMAIL.formatted(username)));
         if (!authentication.getAuthorities().contains(Role.ADMIN) && user.getId() != ads.getAuthor().getId()) {
-            throw new AccessDeniedException("Редактировать/удалять объявления может только автор объявления или Админ!");
+            throw new AccessDeniedException(ACCESS_DENIED_MSG.formatted());
         }
         return true;
     };
-
-
 
 }

@@ -2,13 +2,13 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mapper.UserMapperInterface;
 import ru.skypro.homework.service.AuthService;
@@ -25,6 +24,7 @@ import ru.skypro.homework.service.UserService;
 
 import javax.validation.Valid;
 import java.io.IOException;
+
 
 
 @CrossOrigin(value = "http://localhost:3000")
@@ -60,13 +60,17 @@ public class UserController {
             },
             tags = "Пользователи"
     )
-    @PostMapping("/set_password")
-    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword password, Authentication authentication) {
-        printLogInfo("POST", "setPassword", "/set_password");
-        userService.setPassword(password.getCurrentPassword(), password.getNewPassword(), authentication);
-        return ResponseEntity.ok(password);
-    }
 
+    @PostMapping("/set_password")
+    public ResponseEntity<User> setPassword(@RequestBody NewPassword password, Authentication authentication) throws IOException {
+
+        User user = userService.setPassword(password, authentication);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
     @Operation(
             summary = "Получить информацию об авторизованном пользователе",
             responses = {

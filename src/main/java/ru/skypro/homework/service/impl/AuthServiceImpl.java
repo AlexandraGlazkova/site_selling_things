@@ -17,6 +17,8 @@ import ru.skypro.homework.service.AuthService;
 
 import javax.validation.ValidationException;
 
+import static ru.skypro.homework.constant.error.*;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -25,7 +27,11 @@ public class AuthServiceImpl implements AuthService {
   private final PasswordEncoder encoder;
   private final UserRepository userRepository;
 
-
+  /**
+   * Вход в личный кабинет авторизированного пользователя
+   * @param userName email пользователя
+   * @param password пароль
+   */
 
   @Override
   public boolean login(String userName, String password) {
@@ -33,29 +39,29 @@ public class AuthServiceImpl implements AuthService {
     try {
       UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
       if (!encoder.matches(password, userDetails.getPassword())) {
-        throw new IncorrectPasswordException("Неверный пароль!");
+        throw new IncorrectPasswordException(WRONG_PASS_MSG.formatted());
       }
 
     } catch (UsernameNotFoundException e) {
-      throw new UserNotFoundException("Пользователь " + userName + " не существует!");
+      throw new UserNotFoundException(USER_DOES_NOT_EXIST.formatted(userName));
     }  return true;
 
   }
-
+  /**
+   * Регистрация пользователя
+   *  @param registerReq
+   *  @param role
+   */
 
   @Override
   public boolean register(RegisterReq registerReq, Role role) {
     User user = UserMapperInterface.INSTANCE.toEntity(registerReq);
     if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
-      throw new ValidationException("Пользователь " + registerReq.getUsername() + " уже зарегистрирован!");
+      throw new ValidationException(USER_ALREADY_REGISTERED.formatted(registerReq.getUsername()));
     }
     user.setPassword(encoder.encode(user.getPassword()));
     user.setRole(role);
     userRepository.save(user);
     return true;
   }
-
-
-
-
 }

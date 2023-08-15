@@ -17,6 +17,7 @@ import ru.skypro.homework.dto.AdsDto;
 import ru.skypro.homework.dto.CreateAds;
 import ru.skypro.homework.dto.FullAds;
 import ru.skypro.homework.dto.ResponseWrapperAds;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.mapper.AdsMapperInterface;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.ImageService;

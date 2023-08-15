@@ -12,45 +12,63 @@ import ru.skypro.homework.service.ImageService;
 import javax.transaction.Transactional;
 import java.io.IOException;
 
+import static ru.skypro.homework.constant.error.IMAGE_BY_ID_NOT_FOUND;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
-
+    /**
+     * загрузка картинок/фото
+     * @param imageFile
+     */
     @Override
     public Image uploadImage(MultipartFile imageFile) throws IOException {
 
             Image image = new Image();
             image.setData(imageFile.getBytes());
             image.setFileSize(imageFile.getSize());
+            image.setFilePath(imageFile.getOriginalFilename());
             image.setMediaType(imageFile.getContentType());
             image.setData(imageFile.getBytes());
+
             return imageRepository.save(image);
         }
-
+    /**
+     * Загрузка аватарок
+     * @param imageFile -фото
+     * @param user - пользователь
+     */
     @Override
     public Image uploadImageForUser(MultipartFile imageFile, User user) throws IOException {
 
         Image image = new Image();
         image.setData(imageFile.getBytes());
         image.setFileSize(imageFile.getSize());
+        image.setFilePath(imageFile.getOriginalFilename());
         image.setMediaType(imageFile.getContentType());
         image.setData(imageFile.getBytes());
         image.setUser(user);
         return imageRepository.save(image);
     }
-
+    /**
+     * Удаления фото
+     * @param imageFile
+     */
     @Override
     public void removeImage (Image image) {
         imageRepository.delete(image);
     }
-
+    /**
+     * Получение картинки по id
+     * @param id
+     */
 
     @Override
     public Image getImageById(Integer id) {
         return imageRepository.findById(id).orElseThrow(
-                () -> new ImageNotFoundException("Картинка с id " + id + " не найдена!"));
+                () -> new ImageNotFoundException(IMAGE_BY_ID_NOT_FOUND.formatted(id)));
     }
 }
 
